@@ -1,3 +1,5 @@
+> 🇫🇷 **French version:** [README.md](./README.md)
+
 # validity-and-grounding
 
 Public research repository dedicated to experimental methods for evaluating factual validity and grounding in AI-generated responses.
