@@ -1,3 +1,5 @@
+> 🇬🇧 **English version:** [README_EN.md](./README_EN.md)
+
 # validity-and-grounding
 
 Dépôt public de recherche consacré aux méthodes expérimentales d’évaluation de la validité factuelle et du grounding des réponses générées par des IA.
