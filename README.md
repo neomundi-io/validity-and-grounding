@@ -1,61 +1,87 @@
 > 🇬🇧 **English version:** [README_EN.md](./README_EN.md)
 
-# validity-and-grounding
+# Validité et grounding
 
-Dépôt public de recherche consacré aux méthodes expérimentales d’évaluation de la validité factuelle et du grounding des réponses générées par des IA.
+**Évaluer la validité factuelle d’une réponse générée sans la confondre avec sa stabilité en temps réel.**
 
-Ce dépôt s’inscrit dans l’initiative NeoMundi Research.
+Ce dépôt public de recherche est consacré aux méthodes expérimentales d’évaluation de la validité factuelle, du risque sémantique et du grounding des réponses générées par des systèmes d’IA.
 
-Il se concentre sur une question précise :
+Il s’inscrit dans l’initiative **NeoMundi Research**.
 
-> Comment évaluer la validité factuelle, le risque sémantique et l’ancrage documentaire d’une réponse générée par IA, indépendamment de sa stabilité runtime ?
+La question centrale est simple :
+
+> **Comment évaluer la validité factuelle, le risque sémantique et l’ancrage documentaire d’une réponse générée par IA, indépendamment de sa stabilité pendant l’exécution ?**
+
+---
 
 ## 1. Objectif
 
-Les systèmes d’IA modernes peuvent produire des réponses fluides, cohérentes et stables, tout en étant factuellement fausses ou insuffisamment fondées.
+Les systèmes d’IA générative peuvent produire des réponses fluides, cohérentes et stables tout en étant factuellement fausses ou insuffisamment fondées.
 
-Ce dépôt explore une séparation méthodologique entre :
+NeoMundi distingue donc plusieurs signaux complémentaires :
 
-- **la stabilité runtime**, c’est-à-dire le comportement de la génération pendant sa production ;
-- **la validité factuelle**, c’est-à-dire la probabilité que les affirmations générées soient correctes ;
-- **le grounding**, c’est-à-dire le fait qu’une affirmation soit soutenue par un corpus documentaire fourni ;
-- **le risque d’hallucination**, c’est-à-dire le risque que la réponse contienne des affirmations non fondées, fabriquées ou sémantiquement instables.
+* **la stabilité de génération en temps réel**, c’est-à-dire le comportement du système pendant la production de la réponse ;
+* **la validité factuelle**, c’est-à-dire la probabilité que les affirmations générées soient correctes ;
+* **le grounding**, c’est-à-dire le fait qu’une affirmation soit soutenue par un corpus documentaire fourni ;
+* **le risque d’hallucination**, c’est-à-dire le risque que la réponse contienne des affirmations non fondées, fabriquées ou sémantiquement fragiles.
+
+> **Stable ne veut pas dire vrai.**
 
 L’objectif n’est pas de produire un score unique opaque.
 
 L’objectif est de documenter des signaux distincts, interprétables, auditables et combinables selon le contexte de gouvernance.
 
-## 2. Pourquoi séparer validité et stabilité
+---
+
+## 2. Séparer stabilité et validité
 
 Une réponse peut être stable mais fausse.
 
-Une réponse peut aussi être partiellement instable tout en contenant des éléments factuels utiles.
+Une réponse peut également contenir des informations factuellement utiles tout en présentant une instabilité de génération.
 
-Pour cette raison, NeoMundi distingue deux couches différentes :
+NeoMundi sépare donc deux couches méthodologiques :
 
 ```txt
-G = signal de stabilité runtime
-V = signal de validité et de grounding
+G = signal de stabilité de génération en temps réel
+V = signal de validité factuelle et de grounding
 ```
 
 Cette séparation évite de confondre stabilité comportementale et exactitude factuelle.
 
 En pratique :
 
-- **G** aide à déterminer si la génération reste stable pendant son exécution.
-- **V** aide à déterminer si le contenu généré est factuellement soutenu.
-- Un système de gouvernance peut utiliser les deux signaux, mais ils ne doivent pas être fusionnés trop tôt dans un score unique non explicable.
+* **G** aide à déterminer si la génération reste stable pendant son exécution ;
+* **V** aide à déterminer si le contenu généré est factuellement soutenu ;
+* les deux signaux peuvent être combinés dans une architecture de gouvernance ;
+* ils ne doivent pas être fusionnés trop tôt dans un score unique difficile à expliquer.
 
-## 3. GPT-4o comme juge
+> **La stabilité n’est pas la vérité.
+> Le grounding n’est pas la gouvernance.
+> La gouvernance responsable exige des signaux distincts.**
 
-Dans le design expérimental actuel, GPT-4o peut être utilisé comme juge externe pour évaluer les réponses générées.
+---
 
-Son rôle est de détecter :
+## 3. Llama auto-hébergé comme juge
 
-- les hallucinations factuelles potentielles ;
-- les éléments sémantiquement instables ;
-- les affirmations suspectes ou non soutenues ;
-- les phrases exactes nécessitant une revue humaine.
+NeoMundi intègre un **juge Llama auto-hébergé dans un pipeline d’inférence souverain**.
+
+Cette architecture permet d’exécuter une fonction critique de qualification sur une infrastructure maîtrisée, sans dépendre systématiquement d’un service d’inférence externe.
+
+> **Llama auto-hébergé comme juge dans un pipeline d’inférence souverain.**
+
+Le juge peut contribuer à identifier :
+
+* les hallucinations factuelles potentielles ;
+* les affirmations suspectes ou non soutenues ;
+* les tensions sémantiques ;
+* les phrases exactes nécessitant une revue humaine ;
+* les éléments appelant une vérification complémentaire.
+
+Cette évolution renforce trois exigences fondamentales :
+
+* **confidentialité**, en réduisant l’exposition inutile des données sensibles ;
+* **résilience**, en limitant la dépendance aux services externes ;
+* **souveraineté opérationnelle**, en permettant l’exécution d’une fonction critique sur une infrastructure maîtrisée par NeoMundi.
 
 Une sortie publique simplifiée peut ressembler à ceci :
 
@@ -74,28 +100,50 @@ Une sortie publique simplifiée peut ressembler à ceci :
 }
 ```
 
-Le principe important est que les phrases suspectes doivent être extraites comme des sous-chaînes exactes de la réponse originale, et non réécrites ou paraphrasées.
+Le principe important est que les phrases suspectes soient extraites comme des sous-chaînes exactes de la réponse originale.
+
+Elles ne doivent pas être réécrites ou paraphrasées.
 
 Cela rend le signal inspectable par un humain.
 
-## 4. Cohere comme module de grounding
+---
+
+## 4. Juges externes et validation méthodologique
+
+Des modèles externes peuvent également être utilisés pour :
+
+* comparer les verdicts ;
+* mesurer les accords et désaccords ;
+* préparer des revues méthodologiques ;
+* effectuer des tests croisés ;
+* contribuer à une validation multi-juges.
+
+Ces modèles externes ne constituent pas nécessairement la source unique de vérité.
+
+Ils peuvent servir de couches complémentaires de comparaison, d’arbitrage ou de validation.
+
+L’objectif est de réduire la dépendance à un juge unique et de rendre les zones d’incertitude plus visibles.
+
+---
+
+## 5. Cohere comme module optionnel de grounding
 
 Cohere peut être utilisé comme module optionnel de grounding.
 
-Son rôle est différent de celui du juge GPT-4o.
+Son rôle est différent de celui du juge Llama auto-hébergé.
 
-GPT-4o peut évaluer une réponse de manière générale, sur le plan sémantique et factuel.
+Le juge contribue à qualifier le risque factuel et sémantique d’une réponse.
 
-Le module de grounding permet de vérifier si les affirmations de la réponse sont soutenues par un corpus documentaire spécifique fourni par l’utilisateur ou le client.
+Le module de grounding vérifie si les affirmations sont soutenues par un corpus documentaire spécifique fourni par l’utilisateur ou le client.
 
 Ce mécanisme est particulièrement utile dans des contextes comme :
 
-- l’IA juridique ;
-- l’automatisation documentaire ;
-- les workflows de conformité ;
-- les bases de connaissance d’entreprise ;
-- la documentation médicale ou technique ;
-- les assistants internes fondés sur des politiques ou procédures.
+* l’IA juridique ;
+* l’automatisation documentaire ;
+* les workflows de conformité ;
+* les bases de connaissance d’entreprise ;
+* la documentation médicale ou technique ;
+* les assistants internes fondés sur des politiques ou procédures.
 
 Une sortie publique simplifiée peut ressembler à ceci :
 
@@ -119,47 +167,61 @@ Le module de grounding est optionnel.
 
 Il n’est pertinent que lorsqu’un corpus de référence est disponible.
 
-## 5. Architecture conceptuelle
+---
 
-La couche de validité et de grounding peut être comprise comme une couche d’évaluation parallèle.
+## 6. Architecture conceptuelle
+
+La couche de validité et de grounding peut être comprise comme une couche d’évaluation parallèle au signal de stabilité en temps réel.
 
 ```txt
 Prompt utilisateur
     ↓
 Réponse LLM
     ↓
-Évaluation de validité et de grounding
-    ├── Juge GPT-4o
+Qualification de validité et de grounding
+    ├── Juge Llama auto-hébergé
     │   ├── risque factuel
-    │   ├── instabilité sémantique
-    │   └── phrases suspectes
+    │   ├── tension sémantique
+    │   ├── phrases suspectes
+    │   └── éléments à vérifier
     │
-    └── Module de grounding Cohere
+    ├── Comparaison multi-juges optionnelle
+    │   ├── accords
+    │   ├── désaccords
+    │   └── arbitrage méthodologique
+    │
+    └── Module de grounding Cohere optionnel
         ├── score de grounding
         ├── citations de soutien
         └── affirmations non fondées
 ```
 
-Ce dépôt ne définit pas le moteur complet de gouvernance runtime de NeoMundi.
+> **Mesurer. Qualifier. Vérifier. Interpréter. Gouverner.**
 
-Il documente uniquement la couche publique de recherche liée à la validité et au grounding.
+Ce dépôt ne définit pas l’intégralité du moteur de gouvernance en temps réel de NeoMundi.
 
-## 6. Exemple d’interprétation
+Il documente la couche publique de recherche consacrée à la validité factuelle et au grounding.
+
+---
+
+## 7. Exemple d’interprétation
 
 Une réponse générée peut recevoir le profil suivant :
 
 ```txt
-Stabilité runtime : stable
+Stabilité en temps réel : stable
 Validité factuelle : faible
 Grounding : insuffisant
 Risque d’hallucination : élevé
 ```
 
-Cela signifie que la réponse peut sembler fluide et cohérente, tout en nécessitant une revue parce que ses affirmations ne sont pas suffisamment soutenues.
+Cela signifie que la réponse peut sembler fluide et cohérente tout en nécessitant une revue, car ses affirmations ne sont pas suffisamment soutenues.
 
-Cette distinction est centrale pour une gouvernance responsable des IA.
+Cette distinction est centrale pour une gouvernance responsable de l’IA.
 
-## 7. Schéma public indicatif
+---
+
+## 8. Schéma public indicatif
 
 Un profil public de validité peut inclure :
 
@@ -188,51 +250,66 @@ Ce schéma est illustratif.
 
 Il ne constitue pas un contrat de production.
 
-## 8. Ce que ce dépôt ne divulgue pas
+---
+
+## 9. Ce que ce dépôt ne divulgue pas
 
 Ce dépôt ne divulgue volontairement pas :
 
-- les formules propriétaires de gouvernance ;
-- les prompts internes utilisés en production ;
-- les calibrations internes de seuils ;
-- les coefficients de scoring ;
-- la logique complète de décision runtime ;
-- les détails d’implémentation client ;
-- les jeux de données privés ;
-- les clés API ou éléments d’infrastructure de production.
+* les formules propriétaires de gouvernance ;
+* les prompts internes utilisés en production ;
+* les calibrations internes de seuils ;
+* les coefficients de scoring ;
+* la logique complète de décision en temps réel ;
+* les détails d’implémentation client ;
+* les jeux de données privés ;
+* les clés API ;
+* les détails sensibles de l’infrastructure de production.
 
-L’objectif est de documenter une direction de recherche et d’ouvrir une discussion méthodologique, pas d’exposer le moteur complet de NeoMundi.
+L’objectif est de documenter une direction de recherche et d’ouvrir une discussion méthodologique.
 
-## 9. Statut de recherche
+L’objectif n’est pas d’exposer le moteur complet de NeoMundi.
+
+---
+
+## 10. Statut de recherche
 
 Ce dépôt est expérimental.
 
 Les méthodes documentées ici visent à soutenir :
 
-- la revue indépendante ;
-- la discussion méthodologique ;
-- des exemples reproductibles ;
-- la conception de futurs benchmarks ;
-- des architectures de gouvernance IA plus sûres.
+* la revue indépendante ;
+* la discussion méthodologique ;
+* des exemples reproductibles ;
+* la conception de futurs benchmarks ;
+* des architectures de gouvernance IA plus sûres ;
+* des pipelines d’inférence plus souverains.
 
 Elles ne doivent pas être interprétées comme un standard scientifique final.
 
-## 10. Relation avec NeoMundi
+---
 
-NeoMundi développe des signaux de gouvernance runtime pour les systèmes d’IA.
+## 11. Relation avec NeoMundi
 
-Ce dépôt se concentre uniquement sur la couche de validité et de grounding.
+NeoMundi développe une couche de mesure et de gouvernance en temps réel pour les systèmes d’IA.
 
-Il complète l’approche plus large de NeoMundi, selon laquelle la gouvernance de l’IA nécessite plusieurs signaux distincts plutôt qu’un score unique opaque.
+Ce dépôt se concentre uniquement sur la couche de validité factuelle et de grounding.
+
+Il complète une architecture plus large dans laquelle plusieurs signaux restent distincts, auditables et interprétables.
 
 Principe central :
 
-> La stabilité n’est pas la vérité.  
-> Le grounding n’est pas la gouvernance.  
-> Les systèmes d’IA responsables ont besoin de signaux distincts, interprétables et auditables.
+> **La stabilité n’est pas la vérité.
+> Le grounding n’est pas la gouvernance.
+> Les systèmes d’IA responsables ont besoin de signaux distincts, interprétables et auditables.**
 
-## 11. Licence
+---
 
-Licence à définir.
+## 12. Droits d’utilisation
 
-Tant qu’aucune licence explicite n’est ajoutée, tous droits réservés par NeoMundi Research.
+Ce dépôt est publié à des fins de lecture et d’examen méthodologique uniquement.
+
+Aucune licence de réutilisation n’est accordée.
+
+Tous droits réservés par NeoMundi Research.
+
